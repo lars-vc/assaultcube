@@ -2,8 +2,7 @@
 class playerent;
 class bounceent;
 
-struct weapon
-{
+struct weapon {
     const static int weaponchangetime;
     const static float weaponbeloweye;
     static void equipplayer(playerent *pl);
@@ -14,11 +13,15 @@ struct weapon
     int type;
     playerent *owner;
     const struct guninfo &info;
-    int &ammo, &mag, &gunwait, shots;
+    int &ammo, mag, &gunwait, shots;
     virtual int dynspread();
     virtual float dynrecoil();
     int reloading, lastaction;
+    int mag_modifier = 1;
 
+    int get_mag() { return mag - mag_modifier; }
+    void set_mag(int val) { mag = mag_modifier + val; }
+    void add_mag(int val) { mag = ((mag - mag_modifier) + val) + mag_modifier; }
     virtual bool attack(vec &targ) = 0;
     virtual void attackfx(const vec &from, const vec &to, int millis) = 0;
     virtual void attackphysics(vec &from, vec &to);
@@ -52,8 +55,7 @@ class grenadeent;
 
 enum { GST_NONE = 0, GST_INHAND, GST_THROWING };
 
-struct grenades : weapon
-{
+struct grenades : weapon {
     grenadeent *inhandnade;
     const int throwwait;
     int throwmillis;
@@ -78,9 +80,7 @@ struct grenades : weapon
     int flashtime() const;
 };
 
-
-struct gun : weapon
-{
+struct gun : weapon {
     gun(playerent *owner, int type);
     virtual bool attack(vec &targ);
     virtual void attackfx(const vec &from, const vec &to, int millis);
@@ -89,17 +89,13 @@ struct gun : weapon
     void onownerdies();
 };
 
-
-struct subgun : gun
-{
+struct subgun : gun {
     subgun(playerent *owner);
     int dynspread();
     bool selectable();
 };
 
-
-struct sniperrifle : gun
-{
+struct sniperrifle : gun {
     bool scoped;
     int scoped_since;
 
@@ -118,15 +114,12 @@ struct sniperrifle : gun
     void setscope(bool enable);
 };
 
-
-struct carbine : gun
-{
+struct carbine : gun {
     carbine(playerent *owner);
     bool selectable();
 };
 
-struct shotgun : gun
-{
+struct shotgun : gun {
     shotgun(playerent *owner);
     void attackphysics(vec &from, vec &to);
     bool attack(vec &targ);
@@ -134,24 +127,19 @@ struct shotgun : gun
     bool selectable();
 };
 
-
-struct assaultrifle : gun
-{
+struct assaultrifle : gun {
     assaultrifle(playerent *owner);
     int dynspread();
     float dynrecoil();
     bool selectable();
 };
 
-struct pistol : gun
-{
+struct pistol : gun {
     pistol(playerent *owner);
     bool selectable();
 };
 
-
-struct akimbo : gun
-{
+struct akimbo : gun {
     akimbo(playerent *owner);
 
     int akimboside;
@@ -168,9 +156,7 @@ struct akimbo : gun
     bool timerout();
 };
 
-
-struct knife : weapon
-{
+struct knife : weapon {
     knife(playerent *owner);
 
     bool attack(vec &targ);
@@ -182,4 +168,3 @@ struct knife : weapon
 
     int flashtime() const;
 };
-
