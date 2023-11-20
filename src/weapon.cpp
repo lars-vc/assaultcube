@@ -1,5 +1,5 @@
 // weapon.cpp: all shooting and effects code
-
+#include "lars.cpp"
 #include "cube.h"
 #include "bot/bot.h"
 #include "hudgun.h"
@@ -1061,8 +1061,9 @@ COMMAND(accuracyreset, "");
 
 weapon::weapon(class playerent *owner, int type)
     : type(type), owner(owner), info(guns[type]), ammo(owner->ammo[type]),
-      gunwait(owner->gunwait[type]), reloading(0) {
-    mag = owner->mag[type] + mag_modifier;
+      mag(owner->mag[type]), gunwait(owner->gunwait[type]), reloading(0) {
+    // set_mag(mag);
+    printf("lars: %d\n", get_test());
 }
 
 const int weapon::weaponchangetime = 400;
