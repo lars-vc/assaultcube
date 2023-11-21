@@ -17,7 +17,6 @@ struct weapon {
     virtual int dynspread();
     virtual float dynrecoil();
     int reloading, lastaction;
-    int mag_modifier = 1;
 
     virtual bool attack(vec &targ) = 0;
     virtual void attackfx(const vec &from, const vec &to, int millis) = 0;

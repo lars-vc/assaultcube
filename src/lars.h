@@ -1,9 +1,11 @@
 #pragma once
 #include <stdlib.h>
 #include <vector>
+// TODO: fix with lars.cpp
 // int get_val_lars(int val);
 // void set_val_lars(int &val, int set);
 // void add_val_lars(int &val, int add);
+
 ///////////////////////////////////////////
 // simple add
 ///////////////////////////////////////////
@@ -15,6 +17,7 @@
 // inline void add_val_lars(int &val, int add) {
 //     set_val_lars(val, get_val_lars(val) + add);
 // }
+
 ///////////////////////////////////////////
 // simple xor
 ///////////////////////////////////////////
@@ -26,8 +29,3 @@ inline void set_val_lars(int &val, int set) { val = set ^ val_mask; }
 inline void add_val_lars(int &val, int add) {
     set_val_lars(val, get_val_lars(val) + add);
 }
-
-class Protector {
-    std::vector<int> masks;
-    Protector() {}
-};
