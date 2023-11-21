@@ -19,9 +19,6 @@ struct weapon {
     int reloading, lastaction;
     int mag_modifier = 1;
 
-    int get_mag() { return mag - mag_modifier; }
-    void set_mag(int val) { mag = mag_modifier + val; }
-    void add_mag(int val) { mag = ((mag - mag_modifier) + val) + mag_modifier; }
     virtual bool attack(vec &targ) = 0;
     virtual void attackfx(const vec &from, const vec &to, int millis) = 0;
     virtual void attackphysics(vec &from, vec &to);

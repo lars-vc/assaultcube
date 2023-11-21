@@ -117,7 +117,8 @@ CLIENT_OBJS= \
 	bot/bot_util.o \
 	bot/bot_waypoint.o \
 	bot/ac_bot.o \
-	bot/ac_bot_ai.o
+	bot/ac_bot_ai.o #\
+	# lars.o
 
 CLIENT_PCH= cube.h.gch
 
@@ -349,7 +350,7 @@ water.o: entity.h world.h command.h varray.h vote.h console.h protos.h
 weapon.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 weapon.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 weapon.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ac_bot.h
-weapon.o: hudgun.h
+weapon.o: hudgun.h lars.h
 wizard.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 wizard.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 wizard.o: protos.h
@@ -435,3 +436,5 @@ command-standalone.o: vote.h console.h protos.h
 master-standalone.o: cube.h platform.h tools.h geom.h model.h protocol.h
 master-standalone.o: sound.h weapon.h entity.h world.h command.h varray.h
 master-standalone.o: vote.h console.h protos.h
+
+# lars.o: lars.cpp

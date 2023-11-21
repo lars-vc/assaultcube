@@ -1,5 +1,5 @@
 // weapon.cpp: all shooting and effects code
-#include "lars.cpp"
+#include "lars.h"
 #include "cube.h"
 #include "bot/bot.h"
 #include "hudgun.h"
@@ -129,7 +129,7 @@ void quicknadethrow(bool on) {
     if (player1->state != CS_ALIVE)
         return;
     if (on) {
-        if (player1->weapons[GUN_GRENADE]->get_mag() > 0) {
+        if (get_val_lars(player1->weapons[GUN_GRENADE]->mag) > 0) {
             if (player1->weaponsel->type != GUN_GRENADE)
                 selectweapon(player1->weapons[GUN_GRENADE]);
             if (player1->weaponsel->type == GUN_GRENADE ||
@@ -160,7 +160,7 @@ COMMANDF(
     magcontent, "s", (char *ws) {
         int w = getlistindex(ws, gunnames, true, -1);
         if (w >= 0)
-            intret(player1->weapons[w]->get_mag());
+            intret(get_val_lars(player1->weapons[w]->mag));
         else
             intret(-1);
     });
@@ -1061,10 +1061,7 @@ COMMAND(accuracyreset, "");
 
 weapon::weapon(class playerent *owner, int type)
     : type(type), owner(owner), info(guns[type]), ammo(owner->ammo[type]),
-      mag(owner->mag[type]), gunwait(owner->gunwait[type]), reloading(0) {
-    // set_mag(mag);
-    printf("lars: %d\n", get_test());
-}
+      mag(owner->mag[type]), gunwait(owner->gunwait[type]), reloading(0) {}
 
 const int weapon::weaponchangetime = 400;
 const float weapon::weaponbeloweye = 0.2f;
@@ -1098,14 +1095,14 @@ void weapon::attacksound() {
 }
 
 bool weapon::reload(bool autoreloaded) {
-    if (get_mag() >= info.magsize || ammo <= 0)
+    if (get_val_lars(mag) >= info.magsize || ammo <= 0)
         return false;
     updatelastaction(owner);
     reloading = lastmillis;
     gunwait += info.reloadtime;
 
-    int numbullets = min(info.magsize - get_mag(), ammo);
-    add_mag(numbullets);
+    int numbullets = min(info.magsize - get_val_lars(mag), ammo);
+    add_val_lars(mag, numbullets);
     ammo -= numbullets;
 
     bool local = (player1 == owner);
@@ -1123,9 +1120,9 @@ VARP(oldfashionedgunstats, 0, 0, 1);
 void weapon::renderstats() {
     string gunstats;
     if (oldfashionedgunstats)
-        formatstring(gunstats)("%d/%d", get_mag(), ammo);
+        formatstring(gunstats)("%d/%d", get_val_lars(mag), ammo);
     else
-        formatstring(gunstats)("%d", get_mag());
+        formatstring(gunstats)("%d", get_val_lars(mag));
     draw_text(gunstats, HUDPOS_WEAPON + HUDPOS_NUMBERSPACING, 823);
     if (!oldfashionedgunstats) {
         int offset = text_width(gunstats);
@@ -1395,7 +1392,7 @@ bool grenades::attack(vec &targ) {
     case GST_THROWING:
         if (attackmillis >= throwwait) {
             reset();
-            if (!get_mag() && this == owner->weaponsel) {
+            if (!get_val_lars(mag) && this == owner->weaponsel) {
                 owner->weaponchanging = lastmillis - 1 - (weaponchangetime / 2);
                 owner->nextweaponsel = owner->weaponsel = owner->primweap;
             }
@@ -1437,7 +1434,7 @@ int grenades::modelanim() {
 }
 
 void grenades::activatenade(const vec &vel) {
-    if (!get_mag())
+    if (!get_val_lars(mag))
         return;
     throwmillis = 0;
 
@@ -1445,7 +1442,7 @@ void grenades::activatenade(const vec &vel) {
     bounceents.add(inhandnade);
 
     updatelastaction(owner);
-    add_mag(-1);
+    add_val_lars(mag, -1);
     gunwait = info.attackdelay;
     owner->lastattackweapon = this;
     state = GST_INHAND;
@@ -1491,7 +1488,7 @@ void grenades::dropnade() {
 
 void grenades::renderstats() {
     char gunstats[64];
-    sprintf(gunstats, "%d", get_mag());
+    sprintf(gunstats, "%d", get_val_lars(mag));
     draw_text(gunstats,
               oldfashionedgunstats
                   ? HUDPOS_GRENADE + HUDPOS_NUMBERSPACING +
@@ -1501,7 +1498,7 @@ void grenades::renderstats() {
 }
 
 bool grenades::selectable() {
-    return weapon::selectable() && state != GST_INHAND && get_mag();
+    return weapon::selectable() && state != GST_INHAND && get_val_lars(mag);
 }
 void grenades::reset() {
     throwmillis = 0;
@@ -1549,7 +1546,7 @@ bool gun::attack(vec &targ) {
 
     attackmillis = lastmillis - min(attackmillis, curtime);
     updatelastaction(owner, attackmillis);
-    if (!get_mag()) {
+    if (!get_val_lars(mag)) {
         bool local = (owner == player1);
         audiomgr.playsound(S_NOAMMO, owner, local ? SP_HIGH : SP_NORMAL);
         gunwait += 250;
@@ -1582,7 +1579,7 @@ bool gun::attack(vec &targ) {
     attackfx(from, to, 0);
 
     gunwait = info.attackdelay;
-    add_mag(-1);
+    add_val_lars(mag, -1);
 
     sendshoot(from, to, attackmillis);
 
@@ -1603,7 +1600,7 @@ int gun::modelanim() {
     return modelattacking() ? ANIM_GUN_SHOOT | ANIM_LOOP : ANIM_GUN_IDLE;
 }
 void gun::checkautoreload() {
-    if (autoreload && owner == player1 && !get_mag())
+    if (autoreload && owner == player1 && !get_val_lars(mag))
         reload(true);
 }
 void gun::onownerdies() { shots = 0; }
@@ -1907,7 +1904,7 @@ void checkakimbo() {
                     break;
                 }
                 case 2: {
-                    if (player1->mag[GUN_GRENADE])
+                    if (get_val_lars(player1->mag[GUN_GRENADE]))
                         player1->weaponswitch(player1->weapons[GUN_GRENADE]);
                     else {
                         if (player1->weapons[GUN_PISTOL]->ammo)
@@ -1922,7 +1919,7 @@ void checkakimbo() {
                         player1->weaponswitch(
                             player1->weapons[player1->primary]);
                     else {
-                        if (player1->mag[GUN_GRENADE])
+                        if (get_val_lars(player1->mag[GUN_GRENADE]))
                             player1->weaponswitch(
                                 player1->weapons[GUN_GRENADE]);
                         else {
