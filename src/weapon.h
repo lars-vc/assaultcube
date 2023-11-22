@@ -1,4 +1,5 @@
 
+#include "lars.h"
 class playerent;
 class bounceent;
 
@@ -13,7 +14,8 @@ struct weapon {
     int type;
     playerent *owner;
     const struct guninfo &info;
-    int &ammo, &mag, &gunwait, shots;
+    int &ammo, &gunwait, shots;
+    ProtectedInt &mag;
     virtual int dynspread();
     virtual float dynrecoil();
     int reloading, lastaction;

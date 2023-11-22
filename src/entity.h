@@ -1,3 +1,4 @@
+#include <cstdio>
 enum // static entity types
 {
     NOTUSED =
@@ -331,7 +332,8 @@ class playerstate {
     int primary, nextprimary;
     int gunselect;
     bool akimbo;
-    int ammo[NUMGUNS], mag[NUMGUNS], gunwait[NUMGUNS];
+    int ammo[NUMGUNS], gunwait[NUMGUNS];
+    ProtectedInt mag[NUMGUNS];
     int pstatshots[NUMGUNS], pstatdamage[NUMGUNS];
 
     playerstate()
@@ -455,7 +457,9 @@ class playerstate {
 
         if (!m_noprimary) {
             ammo[primary] = ammostats[primary].start - magsize(primary);
+            printf("PRIM1 %d\n", mag[primary].val());
             set_val_lars(mag[primary], magsize(primary));
+            printf("PRIM2 %d\n", mag[primary].val());
         }
 
         gunselect = primary;

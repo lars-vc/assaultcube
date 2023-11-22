@@ -1061,7 +1061,11 @@ COMMAND(accuracyreset, "");
 
 weapon::weapon(class playerent *owner, int type)
     : type(type), owner(owner), info(guns[type]), ammo(owner->ammo[type]),
-      mag(owner->mag[type]), gunwait(owner->gunwait[type]), reloading(0) {}
+      gunwait(owner->gunwait[type]), mag(owner->mag[type]), reloading(0) {
+    ProtectedInt p(5);
+    printf("Lars %d\n", p.val());
+    printf("Lars %d\n", get_val_lars(mag));
+}
 
 const int weapon::weaponchangetime = 400;
 const float weapon::weaponbeloweye = 0.2f;
@@ -1095,8 +1099,13 @@ void weapon::attacksound() {
 }
 
 bool weapon::reload(bool autoreloaded) {
-    if (get_val_lars(mag) >= info.magsize || ammo <= 0)
+    if (get_val_lars(mag) >= info.magsize || ammo <= 0) {
+        printf("HERE\n");
+        printf("%d\n", get_val_lars(mag));
+        printf("%d\n", info.magsize);
+        printf("%b\n", false);
         return false;
+    }
     updatelastaction(owner);
     reloading = lastmillis;
     gunwait += info.reloadtime;
