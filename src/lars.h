@@ -49,7 +49,7 @@ class ProtectedInt {
     int obfuscated_val;
     int id;
     int deobfuscate() const { return protector->masks[id] ^ obfuscated_val; }
-    int obfuscate(int val) { return protector->masks[id] ^ val; }
+    void obfuscate(int val) { obfuscated_val = protector->masks[id] ^ val; }
     // int deobfuscate() const { return 1111111 ^ obfuscated_val; }
     // int obfuscate(int val) { return 1111111 ^ val; }
 
@@ -57,19 +57,19 @@ class ProtectedInt {
         protector = new Protector();
         id = 0;
         protector->masks.push_back(rand());
-        this->obfuscated_val = obfuscate(0);
+        obfuscate(0);
     }
     ProtectedInt(int val) {
         protector = new Protector();
         id = 0;
         protector->masks.push_back(rand());
-        this->obfuscated_val = obfuscate(val);
+        obfuscate(val);
     }
 
     // OPERATORS
     ProtectedInt &operator=(int val) {
         printf("=1 val: %d\n", val);
-        obfuscated_val = obfuscate(val);
+        obfuscate(val);
         return *this;
     }
     ProtectedInt &operator=(ProtectedInt val) {
@@ -94,7 +94,7 @@ class ProtectedInt {
     ProtectedInt &operator+=(int add) {
         printf("+= val: %d\n", add);
         int val = deobfuscate();
-        obfuscated_val = obfuscate(val + add);
+        obfuscate(val + add);
         return *this;
     }
     ProtectedInt &operator++(int) {
@@ -119,7 +119,7 @@ class ProtectedInt {
 inline int get_val_lars(ProtectedInt val) { return val.val(); }
 inline void set_val_lars(ProtectedInt &val, int set) {
     printf("set_val_lars: %d, %d\n", val.val(), set);
-    val.obfuscated_val = val.obfuscate(set);
+    val = set;
 }
 
 inline void add_val_lars(ProtectedInt &val, int add) {
