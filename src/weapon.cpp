@@ -1062,7 +1062,7 @@ COMMAND(accuracyreset, "");
 weapon::weapon(class playerent *owner, int type)
     : type(type), owner(owner), info(guns[type]), ammo(owner->ammo[type]),
       gunwait(owner->gunwait[type]), mag(owner->mag[type]), reloading(0) {
-    ProtectedInt p(5);
+    XORInt p(5);
     printf("Lars %d\n", p.val());
     printf("Lars %d\n", get_val_lars(mag));
 }

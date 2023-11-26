@@ -43,72 +43,42 @@ class Protector {
 };
 
 class ProtectedInt {
-  private:
-  public:
-    Protector *protector;
-    int obfuscated_val;
-    int id;
-    int deobfuscate() const { return protector->masks[id] ^ obfuscated_val; }
-    void obfuscate(int val) { obfuscated_val = protector->masks[id] ^ val; }
-    // int deobfuscate() const { return 1111111 ^ obfuscated_val; }
-    // int obfuscate(int val) { return 1111111 ^ val; }
+  protected:
+    virtual int deobfuscate() const { return 3; };
+    virtual void obfuscate(int val){};
+    virtual void obfuscateAdd(int add){};
 
-    ProtectedInt() {
-        protector = new Protector();
-        id = 0;
-        protector->masks.push_back(rand());
-        obfuscate(0);
-    }
-    ProtectedInt(int val) {
-        protector = new Protector();
-        id = 0;
-        protector->masks.push_back(rand());
-        obfuscate(val);
-    }
+  public:
+    ProtectedInt() { obfuscate(0); }
+    ProtectedInt(int val) { obfuscate(val); }
+    virtual ~ProtectedInt() = default;
 
     // OPERATORS
     ProtectedInt &operator=(int val) {
-        printf("=1 val: %d\n", val);
         obfuscate(val);
         return *this;
     }
     ProtectedInt &operator=(ProtectedInt val) {
-        printf("=2 val: %d\n", val.val());
-        obfuscated_val = val.obfuscated_val;
-        id = val.id;
-        return *this;
+        return operator=(val.deobfuscate());
     }
     ProtectedInt operator+(ProtectedInt add) {
-        printf("+1 val: %d\n", add.val());
         int val = deobfuscate();
         int valadd = add.deobfuscate();
         ProtectedInt p(val + valadd);
         return p;
     }
     ProtectedInt operator+(int add) {
-        printf("+2 val: %d\n", add);
         int val = deobfuscate();
         ProtectedInt p(val + add);
         return p;
     }
     ProtectedInt &operator+=(int add) {
-        printf("+= val: %d\n", add);
-        int val = deobfuscate();
-        obfuscate(val + add);
+        obfuscateAdd(add);
         return *this;
     }
-    ProtectedInt &operator++(int) {
-        printf("+=\n");
-        return this->operator+=(1);
-    }
-    ProtectedInt &operator-=(int add) {
-        printf("+= val: %d\n", add);
-        return this->operator+=(-add);
-    }
-    ProtectedInt &operator--(int) {
-        printf("+= val\n");
-        return this->operator-=(1);
-    }
+    ProtectedInt &operator++(int) { return this->operator+=(1); }
+    ProtectedInt &operator-=(int add) { return this->operator+=(-add); }
+    ProtectedInt &operator--(int) { return this->operator-=(1); }
     operator bool() const { return deobfuscate() != 0; }
     // Maybe this can work?
     // operator int() const { return deobfuscate(); }
@@ -116,7 +86,42 @@ class ProtectedInt {
     int val() { return deobfuscate(); }
 };
 
-inline int get_val_lars(ProtectedInt val) { return val.val(); }
+class XORInt : public ProtectedInt {
+  private:
+    int mask = rand();
+    int obfuscated_val;
+    int deobfuscate() const override { return mask ^ obfuscated_val; }
+    void obfuscate(int val) override { obfuscated_val = mask ^ val; }
+    void obfuscateAdd(int add) override { obfuscate(deobfuscate() + add); }
+
+  public:
+    XORInt() : ProtectedInt() {}
+    XORInt(int val) : ProtectedInt(val) {}
+    ~XORInt() = default;
+};
+
+class SplitInt : public ProtectedInt {
+  private:
+    int val0;
+    int val1;
+    int val2;
+    int val3;
+    int deobfuscate() const override { return val0 + val1 + val2 + val3; }
+    void obfuscate(int val) override {
+        val0 = val - rand();
+        val1 = val / 2;
+        val2 = val / 3;
+        val3 = val - val0 - val1 - val2;
+    }
+    void obfuscateAdd(int add) override { val3 += add; }
+
+  public:
+    SplitInt() : ProtectedInt() {}
+    SplitInt(int val) : ProtectedInt(val) {}
+    ~SplitInt() = default;
+};
+
+inline int get_val_lars(ProtectedInt &val) { return val.val(); }
 inline void set_val_lars(ProtectedInt &val, int set) {
     printf("set_val_lars: %d, %d\n", val.val(), set);
     val = set;
