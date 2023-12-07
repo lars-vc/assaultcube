@@ -1062,7 +1062,7 @@ COMMAND(accuracyreset, "");
 weapon::weapon(class playerent *owner, int type)
     : type(type), owner(owner), info(guns[type]), ammo(owner->ammo[type]),
       gunwait(owner->gunwait[type]), mag(owner->mag[type]), reloading(0) {
-    XORInt p(5);
+    SplitInt p(5);
     printf("Lars %d\n", p.val());
     printf("Lars %d\n", get_val_lars(mag));
 }
@@ -1111,7 +1111,7 @@ bool weapon::reload(bool autoreloaded) {
     gunwait += info.reloadtime;
 
     int numbullets = min(info.magsize - get_val_lars(mag), ammo);
-    add_val_lars(mag, numbullets);
+    mag += numbullets;
     ammo -= numbullets;
 
     bool local = (player1 == owner);
@@ -1451,7 +1451,7 @@ void grenades::activatenade(const vec &vel) {
     bounceents.add(inhandnade);
 
     updatelastaction(owner);
-    add_val_lars(mag, -1);
+    mag--;
     gunwait = info.attackdelay;
     owner->lastattackweapon = this;
     state = GST_INHAND;
@@ -1588,7 +1588,7 @@ bool gun::attack(vec &targ) {
     attackfx(from, to, 0);
 
     gunwait = info.attackdelay;
-    add_val_lars(mag, -1);
+    mag--;
 
     sendshoot(from, to, attackmillis);
 

@@ -731,7 +731,7 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false) {
                 createrays(from, to);
             s->lastaction = lastmillis;
             s->weaponchanging = 0;
-            add_val_lars(s->mag[gun], -1);
+            s->mag[gun]--;
             if (s->weapons[gun]) {
                 s->lastattackweapon = s->weapons[gun];
                 s->weapons[gun]->gunwait = s->weapons[gun]->info.attackdelay;
@@ -821,7 +821,7 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false) {
                     deaths = getint(p), health = getint(p), armour = getint(p),
                     teamkills = getint(p);
                 int ammo[NUMGUNS];
-                XORInt mag[NUMGUNS];
+                SplitInt mag[NUMGUNS];
                 loopi(NUMGUNS) ammo[i] = getint(p);
                 loopi(NUMGUNS) set_val_lars(mag[i], getint(p));
                 playerent *d = (cn == getclientnum() ? player1 : newclient(cn));

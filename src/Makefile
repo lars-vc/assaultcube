@@ -44,6 +44,9 @@ else
 	endif
 endif
 
+# IR LLVM
+# override CXXFLAGS+= -S -emit-llvm
+
 INCLUDES= -I. -Ibot -I../enet/include
 
 STRIP=
@@ -117,8 +120,7 @@ CLIENT_OBJS= \
 	bot/bot_util.o \
 	bot/bot_waypoint.o \
 	bot/ac_bot.o \
-	bot/ac_bot_ai.o #\
-	# lars.o
+	bot/ac_bot_ai.o 
 
 CLIENT_PCH= cube.h.gch
 

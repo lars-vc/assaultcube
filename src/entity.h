@@ -333,7 +333,7 @@ class playerstate {
     int gunselect;
     bool akimbo;
     int ammo[NUMGUNS], gunwait[NUMGUNS];
-    XORInt mag[NUMGUNS];
+    SplitInt mag[NUMGUNS];
     int pstatshots[NUMGUNS], pstatdamage[NUMGUNS];
 
     playerstate()
@@ -405,7 +405,7 @@ class playerstate {
             additem(ammostats[primary], ammo[primary]);
             break;
         case I_GRENADE:
-            add_val_lars(mag[GUN_GRENADE], ammostats[GUN_GRENADE].add);
+            mag[GUN_GRENADE] += ammostats[GUN_GRENADE].add;
             if (get_val_lars(mag[GUN_GRENADE]) > ammostats[GUN_GRENADE].max)
                 set_val_lars(mag[GUN_GRENADE], ammostats[GUN_GRENADE].max);
             // lars annoying stuff
