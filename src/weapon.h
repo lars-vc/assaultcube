@@ -15,7 +15,7 @@ struct weapon {
     playerent *owner;
     const struct guninfo &info;
     int &ammo, &gunwait, shots;
-    XORInt &mag;
+    ChainInt2 &mag;
     virtual int dynspread();
     virtual float dynrecoil();
     int reloading, lastaction;

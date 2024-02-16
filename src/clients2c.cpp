@@ -821,7 +821,7 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false) {
                     deaths = getint(p), health = getint(p), armour = getint(p),
                     teamkills = getint(p);
                 int ammo[NUMGUNS];
-                XORInt mag[NUMGUNS];
+                ChainInt2 mag[NUMGUNS];
                 loopi(NUMGUNS) ammo[i] = getint(p);
                 loopi(NUMGUNS) set_val_lars(mag[i], getint(p));
                 playerent *d = (cn == getclientnum() ? player1 : newclient(cn));

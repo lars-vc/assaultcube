@@ -120,7 +120,7 @@ CLIENT_OBJS= \
 	bot/bot_util.o \
 	bot/bot_waypoint.o \
 	bot/ac_bot.o \
-	bot/ac_bot_ai.o 
+	bot/ac_bot_ai.o
 
 CLIENT_PCH= cube.h.gch
 
@@ -254,7 +254,7 @@ clientgame.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 clientgame.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 clientgame.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
 clientgame.o: bot/ac_bot.h
-clients2c.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
+clients2c.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h lars.h
 clients2c.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 clients2c.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
 clients2c.o: bot/ac_bot.h
@@ -326,7 +326,7 @@ serverms.o: protos.h
 server.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 server.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 server.o: protos.h server.h servercontroller.h serverfiles.h serverchecks.h
-server.o: serverevents.h serveractions.h
+server.o: serverevents.h serveractions.h lars.h
 serverbrowser.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 serverbrowser.o: weapon.h entity.h world.h command.h varray.h vote.h
 serverbrowser.o: console.h protos.h
@@ -379,11 +379,11 @@ bot/bot.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ac_bot.h
 bot/botmanager.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 bot/botmanager.o: weapon.h entity.h world.h command.h varray.h vote.h
 bot/botmanager.o: console.h protos.h bot/bot.h bot/bot_util.h
-bot/botmanager.o: bot/bot_waypoint.h bot/ac_bot.h
+bot/botmanager.o: bot/bot_waypoint.h bot/ac_bot.h lars.h
 bot/bot_ai.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 bot/bot_ai.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 bot/bot_ai.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
-bot/bot_ai.o: bot/ac_bot.h
+bot/bot_ai.o: bot/ac_bot.h lars.h
 bot/bot_util.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 bot/bot_util.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 bot/bot_util.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
@@ -439,4 +439,3 @@ master-standalone.o: cube.h platform.h tools.h geom.h model.h protocol.h
 master-standalone.o: sound.h weapon.h entity.h world.h command.h varray.h
 master-standalone.o: vote.h console.h protos.h
 
-# lars.o: lars.cpp
