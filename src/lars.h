@@ -148,29 +148,40 @@ class ChainInt : public ProtectedInt {
     }
 };
 
-class DummyTail {
-
-  public:
-    int val;
+// class DummyTail {
+//
+//   public:
+//     int val;
+// };
+//
+// class Dummy {
+//
+//   public:
+//     int id;
+//     Dummy *d1;
+//     Dummy *d2;
+//     Dummy *d3;
+//     DummyTail *tail;
+// };
+//
+template <typename T> struct DummyTail {
+    T val;
 };
 
-class Dummy {
-
-  public:
+template <typename T> struct Dummy {
     int id;
-    Dummy *d1;
-    Dummy *d2;
-    Dummy *d3;
-    DummyTail *tail;
+    Dummy<T> *d1;
+    Dummy<T> *d2;
+    Dummy<T> *d3;
+    DummyTail<T> *tail;
 };
-
 class Overseer {
   private:
     // idk i need this function without the if check cus otherwise we cause inf
     // recursion but I also want to keep the other function
-    DummyTail *resolve_dummy_interal(Dummy *d) {
+    template <typename T> DummyTail<T> *resolve_dummy_interal(Dummy<T> *d) {
         int pick = catalog[d->id];
-        Dummy *next = d;
+        Dummy<T> *next = d;
         while (pick != 4) {
             switch (pick) {
             case 0:
@@ -187,19 +198,21 @@ class Overseer {
         }
         return next->tail;
     }
-    Dummy *create_path_rec(int val, int depth, int max_depth) {
-        Dummy *d = new Dummy();
+    template <typename T>
+    Dummy<T> *create_path_rec(T val, int depth, int max_depth) {
+        Dummy<T> *d = new Dummy<T>();
         if (depth < max_depth) {
             d->d1 = create_path_rec(val, depth + 1, max_depth);
             d->d2 = create_path_rec(val, depth + 1, max_depth);
             d->d3 = create_path_rec(val, depth + 1, max_depth);
         }
-        d->tail = new DummyTail();
+        d->tail = new DummyTail<T>();
         d->id = rand();
         d->tail->val = rand();
         return d;
     }
-    void free_path_rec(Dummy *d) {
+
+    template <typename T> void free_path_rec(Dummy<T> *d) {
         if (d->d1 != nullptr) {
             free_path_rec(d->d1);
             free_path_rec(d->d2);
@@ -214,19 +227,19 @@ class Overseer {
     int paths_created = 0;
 
   public:
-    Dummy *create_path(int val) {
+    template <typename T> Dummy<T> *create_path(T val) {
         // int len = rand();
         int len = 10;
-        Dummy *d = create_path_rec(val, 0, len);
+        Dummy<T> *d = create_path_rec(val, 0, len);
         update_path_dummy(d, val);
         paths_created++;
         printf("Created path: %d\n", paths_created);
         return d;
     }
 
-    void free_path(Dummy *d) { free_path_rec(d); }
+    template <typename T> void free_path(Dummy<T> *d) { free_path_rec(d); }
 
-    DummyTail *resolve_dummy(Dummy *d) {
+    template <typename T> DummyTail<T> *resolve_dummy(Dummy<T> *d) {
         // check if dummy is due for chain update
         int index = -1;
         for (int i : due_for_path_update) {
@@ -237,7 +250,7 @@ class Overseer {
         if (index != -1) {
             update_path_dummy(d, resolve_dummy_interal(d)->val);
             due_for_path_update.erase(due_for_path_update.begin() + index);
-            printf("Updated path\n");
+            // printf("Updated path\n");
             // for (const auto &elem : catalog) {
             //     std::cout << elem.first << "," << elem.second << " ";
             // }
@@ -245,7 +258,7 @@ class Overseer {
         }
 
         int pick = catalog[d->id];
-        Dummy *next = d;
+        Dummy<T> *next = d;
         while (pick != 4) {
             switch (pick) {
             case 0:
@@ -263,15 +276,17 @@ class Overseer {
         return next->tail;
     }
 
-    int resolve_dummy_val(Dummy *d) { return resolve_dummy(d)->val; }
+    template <typename T> T resolve_dummy_val(Dummy<T> *d) {
+        return resolve_dummy(d)->val;
+    }
 
-    void update_path_dummy(Dummy *d) {
+    template <typename T> void update_path_dummy(Dummy<T> *d) {
         int val = resolve_dummy_val(d);
         update_path_dummy(d, val);
     }
 
-    void update_path_dummy(Dummy *d, int val) {
-        Dummy *curr = d;
+    template <typename T> void update_path_dummy(Dummy<T> *d, T val) {
+        Dummy<T> *curr = d;
         while (curr->d1 != nullptr) {
             int pick = rand() % 3;
             catalog[curr->id] = pick;
@@ -293,29 +308,78 @@ class Overseer {
 
     // Could decide here whether to update chain or not based on knowledge of
     // change of value
-    void change_value_dummy(Dummy *d, int val) {
+    template <typename T> void change_value_dummy(Dummy<T> *d, T val) {
         due_for_path_update.push_back(d->id);
         resolve_dummy(d)->val = val;
     }
 };
 inline Overseer *overseer = new Overseer();
+//
+// class ChainInt2 : public ProtectedInt {
+//   private:
+//     Dummy *path;
+//     int deobfuscate() const override {
+//         return overseer->resolve_dummy_val(path);
+//     }
+//     void obfuscate(int val) override {
+//         overseer->change_value_dummy(path, val);
+//     }
+//
+//   public:
+//     ChainInt2() { path = overseer->create_path(0); }
+//     ChainInt2(int val) { path = overseer->create_path(val); }
+//     ~ChainInt2() { overseer->free_path(path); }
+// };
 
-class ChainInt2 : public ProtectedInt {
+template <typename T> class Protected {
   private:
-    Dummy *path;
-    int deobfuscate() const override {
-        return overseer->resolve_dummy_val(path);
-    }
-    void obfuscate(int val) override {
-        overseer->change_value_dummy(path, val);
-    }
+    Dummy<T> *path;
+    T deobfuscate() const { return overseer->resolve_dummy_val(path); }
+    void obfuscate(T val) { overseer->change_value_dummy(path, val); }
 
   public:
-    ChainInt2() { path = overseer->create_path(0); }
-    ChainInt2(int val) { path = overseer->create_path(val); }
-    ~ChainInt2() { overseer->free_path(path); }
+    Protected() { path = overseer->create_path(0); }
+    Protected(T val) { path = overseer->create_path(val); }
+    ~Protected() { overseer->free_path(path); }
+
+    Protected &operator=(T val) {
+        obfuscate(val);
+        return *this;
+    }
+    Protected &operator=(Protected val) { return operator=(val.deobfuscate()); }
+    Protected operator+(Protected add) {
+        T val = deobfuscate();
+        T valadd = add.deobfuscate();
+        Protected p(val + valadd);
+        return p;
+    }
+    Protected operator+(T add) {
+        T val = deobfuscate();
+        Protected p(val + add);
+        return p;
+    }
+    Protected &operator+=(T add) {
+        obfuscateAdd(add);
+        return *this;
+    }
+    Protected &operator++(int) { return this->operator+=(1); }
+    Protected &operator-=(T add) { return this->operator+=(-add); }
+    Protected &operator--(int) { return this->operator-=(1); }
+    operator bool() const { return deobfuscate() != 0; }
+    // Maybe this can work?
+    // operator int() const { return deobfuscate(); }
+
+    T val() { return deobfuscate(); }
+    void obfuscateAdd(T add) { obfuscate(deobfuscate() + add); }
 };
 
+template <typename T> protectfunc inline int get_val_lars(Protected<T> &val) {
+    return val.val();
+}
+template <typename T> inline void set_val_lars(Protected<int> &val, T set) {
+    printf("set_val_lars: %d, %d\n", val.val(), set);
+    val = set;
+}
 protectfunc inline int get_val_lars(ProtectedInt &val) { return val.val(); }
 inline void set_val_lars(ProtectedInt &val, int set) {
     printf("set_val_lars: %d, %d\n", val.val(), set);

@@ -333,7 +333,7 @@ class playerstate {
     int gunselect;
     bool akimbo;
     int ammo[NUMGUNS], gunwait[NUMGUNS];
-    ChainInt2 mag[NUMGUNS];
+    Protected<int> mag[NUMGUNS];
     int pstatshots[NUMGUNS], pstatdamage[NUMGUNS];
 
     playerstate()
